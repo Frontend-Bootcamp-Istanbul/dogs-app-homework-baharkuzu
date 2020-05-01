@@ -6,7 +6,7 @@ import Dog from "../components/Dog";
 import axios from "axios";
 
 
-const apiHost = "MOCK API URL";
+const apiHost = "https://5ea9e54fa873660016720f94.mockapi.io";
 
 class Homepage extends React.Component {
     constructor(props){
@@ -14,7 +14,8 @@ class Homepage extends React.Component {
 
         this.state = {
             favorites: [],
-            loadingFavorites: false
+            loadingFavorites: false,
+            dogChanges: false
         }
     }
     componentDidMount() {
@@ -41,11 +42,15 @@ class Homepage extends React.Component {
     }
 
     toggle = (dogId)=>{
+        this.setState({
+            dogChanges: true
+        })
         const foundDog = this.state.favorites.find((favorite) => favorite.dogId === dogId);
         if(foundDog){
             axios.delete(`${apiHost}/favorites/${foundDog.id}`).then((result) => {
                 this.setState(({
-                    favorites: this.state.favorites.filter((dog) => dog.dogId !== dogId)
+                    favorites: this.state.favorites.filter((dog) => dog.dogId !== dogId),
+                    dogChanges: false
                 }))
             }).catch((err) => {
                 console.log(err);
@@ -57,7 +62,8 @@ class Homepage extends React.Component {
             }).then((result) => {
                 const eklenenFavori = result.data; // {id: 1, dogId: benim yolladigim dog id, createdat: date}
                 this.setState({
-                    favorites: [...this.state.favorites, eklenenFavori]
+                    favorites: [...this.state.favorites, eklenenFavori],
+                    dogChanges: false
                 })
             }).catch((err) => {
                 console.log(err);
@@ -68,7 +74,7 @@ class Homepage extends React.Component {
     getStatus= (dogId) =>{
         const foundDog = this.state.favorites.find((favorite) => favorite.dogId === dogId);
         return foundDog;
-    }
+    };
 
     render(){
         if(this.state.loadingFavorites){
@@ -81,7 +87,7 @@ class Homepage extends React.Component {
                 <ul>
                     {
                         dogs.map((dog) => {
-                            return <Dog toggle={this.toggle} id={dog.id} getStatus={this.getStatus} {...dog}/>
+                            return <Dog toggle={this.toggle} id={dog.id} getStatus={this.getStatus} dogChanges={this.state.dogChanges} {...dog}/>
                         })
                     }
                 </ul>
@@ -89,5 +95,4 @@ class Homepage extends React.Component {
         );
     }
 }
-
 export default Homepage;

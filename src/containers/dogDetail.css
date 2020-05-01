@@ -1,0 +1,22 @@
+.card{
+    width: 35rem;
+    background-color: #f4f4f8;
+    margin: auto;
+    margin-top: 15px;
+
+}
+
+.cardHeader{
+    font-weight: bold;
+}
+
+.cardImg{
+    border-radius: 15px;
+    width: 20rem;
+    height: 20rem;
+    margin: auto;
+}
+
+.cardHeader{
+    background-color: #e6e6ea ;
+}
