@@ -1,5 +1,3 @@
-import Homepage from "./containers/Homepage";
-
 const navs = [
     {
         path: "/",
@@ -22,6 +20,5 @@ const navs = [
         title: "Hakkinda"
     },
 ];
-
 
 export default navs;

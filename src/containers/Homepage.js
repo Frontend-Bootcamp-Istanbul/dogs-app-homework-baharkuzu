@@ -1,83 +1,37 @@
 import React from 'react';
 import dogs from "../dogsdata";
-import {Button} from "reactstrap";
-import FavoriteActions from "../components/FavoriteActions";
 import Dog from "../components/Dog";
-import axios from "axios";
-
-
-const apiHost = "https://5ea9e54fa873660016720f94.mockapi.io";
+import {connect} from "react-redux";
+import {getFavorites,addFavorites,removeFavorites, toggleChange} from "../redux/action";
 
 class Homepage extends React.Component {
     constructor(props){
         super(props);
-
-        this.state = {
-            favorites: [],
-            loadingFavorites: false,
-            dogChanges: false
-        }
     }
-    componentDidMount() {
-        // localstoragedan getirme
-/*        this.setState({
-            favorites: window.localStorage.getItem("favorites") ? JSON.parse(window.localStorage.getItem("favorites")): []
-        })*/
 
-        this.setState({
-            loadingFavorites: true
-        }, () => {
-            axios.get(`${apiHost}/favorites`).then((result) => {
-                this.setState({
-                    favorites: result.data,
-                    loadingFavorites: false
-                })
-            }).catch((err) => {
-                console.log("Axios err", err);
-                this.setState(({
-                    loadingFavorites: false
-                }))
-            })
-        })
+    componentDidMount() {
+        this.props.getFavorites()
     }
 
     toggle = (dogId)=>{
-        this.setState({
-            dogChanges: true
-        })
-        const foundDog = this.state.favorites.find((favorite) => favorite.dogId === dogId);
+        this.props.toggleChange(dogId)        
+        const foundDog = this.props.favorites.find((favorite) => favorite.dogId === dogId)
         if(foundDog){
-            axios.delete(`${apiHost}/favorites/${foundDog.id}`).then((result) => {
-                this.setState(({
-                    favorites: this.state.favorites.filter((dog) => dog.dogId !== dogId),
-                    dogChanges: false
-                }))
-            }).catch((err) => {
-                console.log(err);
-            });
+            removeFavorites(foundDog.id, dogId)
+            this.props.toggleChange("")
         }else{
-            // window.localStorage.setItem("favorites", JSON.stringify(this.state.favorites));
-            axios.post(`${apiHost}/favorites`, {
-                dogId
-            }).then((result) => {
-                const eklenenFavori = result.data; // {id: 1, dogId: benim yolladigim dog id, createdat: date}
-                this.setState({
-                    favorites: [...this.state.favorites, eklenenFavori],
-                    dogChanges: false
-                })
-            }).catch((err) => {
-                console.log(err);
-            })
+            addFavorites(dogId)
+            this.props.toggleChange("")
         }
     }
 
     getStatus= (dogId) =>{
-        const foundDog = this.state.favorites.find((favorite) => favorite.dogId === dogId);
+        const foundDog = this.props.favorites.find((favorite) => favorite.dogId === dogId); 
         return foundDog;
     };
 
     render(){
-        if(this.state.loadingFavorites){
+        if(this.props.loadingFavorites){       
             return <div>
                 <h1>Sayfa Yukleniyor.....</h1>
             </div>
@@ -87,7 +41,8 @@ class Homepage extends React.Component {
                 <ul>
                     {
                         dogs.map((dog) => {
-                            return <Dog toggle={this.toggle} id={dog.id} getStatus={this.getStatus} dogChanges={this.state.dogChanges} {...dog}/>
+                            //return <Dog key={dog.id} id={dog.id} {...dog}/>
+                            return <Dog key={dog.id} toggle={this.toggle} id={dog.id} getStatus={this.getStatus} {...dog}/>
                         })
                     }
                 </ul>
@@ -95,4 +50,21 @@ class Homepage extends React.Component {
         );
     }
 }
-export default Homepage;
+
+const mapStateToProps = (state) => {
+    return{
+        loadingFavorites: state.favoritesReducer.loadingFavorites,
+        toogleFavorites: state.favoritesReducer.toogleFavorites,
+        favorites: state.favoritesReducer.favorites
+    }
+}
+
+const mapDispatchToProps = {
+    addFavorites,
+    removeFavorites,
+    toggleChange,
+    getFavorites
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Homepage)
+
