@@ -13,7 +13,7 @@ import {
     DropdownToggle,
     DropdownMenu,
     DropdownItem,
-    NavbarText
+    NavbarText 
 } from 'reactstrap';
 import navs from "./navs";
 
@@ -26,45 +26,17 @@ const Header = () => {
             <Navbar color="light" light expand="md">
                 <NavbarToggler onClick={toggle} />
                 <Collapse isOpen={isOpen} navbar>
-                    <Nav className="mr-auto" navbar>
-{/*                        {
-                            navs.map((route) => {
-                                return <NavItem key={route.path}>
-                                    <NavLink>
-                                        <Link to={route.path}>
-                                            {route.title}
-                                        </Link>
-                                    </NavLink>
-                                </NavItem>
-                            })
-                        }*/}
-                        <NavItem>
-                            <NavLink>
-                                <Link to="/">
-                                    Anasayfa
-                                </Link>
-                            </NavLink>
+                <Nav className="mr-auto" navbar>
+                    {navs.map((route) => {
+                    return (
+                        <NavItem key={route.path}>
+                        <NavLink>
+                            <Link to={route.path}>{route.title}</Link>
+                        </NavLink>
                         </NavItem>
-                        <NavItem>
-                            <NavLink>
-                                <Link to="/hakkinda">
-                                    Hakkimizda
-                                </Link>
-                            </NavLink>
-                        </NavItem>
-                        <NavItem>
-                            <NavLink>
-                                <Link to="/tur/golden-retriever">
-                                    Goldens
-                                </Link>
-                            </NavLink>
-                        </NavItem>
-
-
-
-
-
-                    </Nav>
+                    );
+                    })}
+                </Nav>
                 </Collapse>
             </Navbar>
         </div>
